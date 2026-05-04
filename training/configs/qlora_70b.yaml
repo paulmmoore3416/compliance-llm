@@ -1,0 +1,75 @@
+# QLoRA fine-tuning config — Llama 3.1 70B Instruct on a single MI300X (192 GB HBM3).
+#
+# The high R=64 rank is deliberate: regulatory text is dense and the model
+# must internalize clause structure, not just stylistic surface. The very low
+# learning rate (2e-5) is a hedge against catastrophic forgetting of the
+# base model's general instruction-following.
+
+model:
+  base_model_id: meta-llama/Llama-3.1-70B-Instruct
+  trust_remote_code: false
+  attn_implementation: flash_attention_2  # ROCm CK-flash-attn fork
+  torch_dtype: bfloat16
+
+quantization:
+  load_in_4bit: true
+  bnb_4bit_quant_type: nf4
+  bnb_4bit_compute_dtype: bfloat16
+  bnb_4bit_use_double_quant: true
+
+lora:
+  r: 64
+  lora_alpha: 128        # 2 * r is a common, stable choice
+  lora_dropout: 0.05
+  bias: none
+  task_type: CAUSAL_LM
+  target_modules:
+    - q_proj
+    - k_proj
+    - v_proj
+    - o_proj
+    - gate_proj
+    - up_proj
+    - down_proj
+
+training:
+  output_dir: /workspace/outputs/compliance-llama-70b-qlora
+  num_train_epochs: 3
+  per_device_train_batch_size: 1
+  per_device_eval_batch_size: 1
+  gradient_accumulation_steps: 16   # effective batch = 16 sequences
+  gradient_checkpointing: true
+  learning_rate: 2.0e-5
+  lr_scheduler_type: cosine
+  warmup_ratio: 0.03
+  weight_decay: 0.0
+  max_grad_norm: 0.3
+  bf16: true
+  fp16: false
+  optim: paged_adamw_8bit            # bnb-rocm fork supports this
+  logging_steps: 10
+  save_strategy: steps
+  save_steps: 200
+  save_total_limit: 4
+  eval_strategy: steps
+  eval_steps: 200
+  report_to: ["tensorboard", "wandb"]
+  seed: 42
+  dataloader_num_workers: 4
+  remove_unused_columns: false
+  group_by_length: true              # speeds 70B training noticeably
+  ddp_find_unused_parameters: false
+
+data:
+  train_file: /workspace/data/synthetic/train.jsonl
+  eval_file: /workspace/data/synthetic/eval.jsonl
+  prompt_template: chatml_llama3      # see src/prompts.py
+  max_seq_length: 4096
+  packing: true                       # multi-sequence packing via TRL
+
+# MI300X-specific knobs. The 192 GB HBM3 lets us avoid CPU offloading entirely.
+hardware:
+  cpu_offload: false
+  device_map: auto
+  gradient_checkpointing_kwargs:
+    use_reentrant: false

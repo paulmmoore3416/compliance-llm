@@ -1,0 +1,27 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html, body, #root { height: 100%; }
+
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-thumb { background: #2a323d; border-radius: 5px; }
+::-webkit-scrollbar-thumb:hover { background: #3a4350; }
+::-webkit-scrollbar-track { background: transparent; }
+
+.prose-cl {
+  color: theme('colors.amd.text');
+  font-size: 0.875rem;
+  line-height: 1.6;
+}
+.prose-cl h1 { font-size: 1.4rem; font-weight: 700; margin-top: 1.2rem; margin-bottom: 0.6rem; color: theme('colors.amd.text'); }
+.prose-cl h2 { font-size: 1.15rem; font-weight: 600; margin-top: 1rem; margin-bottom: 0.4rem; color: theme('colors.amd.text'); }
+.prose-cl h3 { font-size: 1.0rem; font-weight: 600; margin-top: 0.8rem; margin-bottom: 0.3rem; color: theme('colors.amd.text'); }
+.prose-cl p { margin: 0.5rem 0; }
+.prose-cl ul { margin: 0.4rem 0 0.4rem 1.2rem; list-style: disc; }
+.prose-cl ol { margin: 0.4rem 0 0.4rem 1.2rem; list-style: decimal; }
+.prose-cl code { background: theme('colors.amd.panel'); padding: 0.1rem 0.3rem; border-radius: 4px; font-size: 0.8rem; }
+.prose-cl table { width: 100%; border-collapse: collapse; margin: 0.6rem 0; font-size: 0.8rem; }
+.prose-cl th, .prose-cl td { border: 1px solid theme('colors.amd.border'); padding: 0.4rem 0.6rem; text-align: left; vertical-align: top; }
+.prose-cl th { background: theme('colors.amd.panel'); font-weight: 600; }
+.prose-cl strong { color: white; }

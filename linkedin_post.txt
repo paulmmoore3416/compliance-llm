@@ -1,0 +1,17 @@
+🚀 Just launched: Compliance-Llama! 🦙
+
+I'm incredibly excited to share a project that tackles one of the biggest bottlenecks in MedTech: regulatory documentation. 
+
+Compliance-Llama is an audit-ready SOP generator that takes a simple device description and outputs a fully structured QMS artifact, complete with clause-by-clause citations for ISO 13485:2016, 21 CFR Part 820, and even advanced cybersecurity requirements (FDA 2023, ISO 27001). 
+
+But here is the coolest part: the entire architecture, synthetic data generation, and advanced regulatory scenario integration was built and orchestrated using the newly released **Gemini 3 Pro CLI**! 🤯 
+
+The speed, context awareness, and coding capabilities of Gemini are absolutely game-changing. It allowed me to map out complex regulatory frameworks and synthesize advanced compliance data in a fraction of the time it would normally take.
+
+If you are dealing with medical device compliance, SaMD, or just love seeing AI applied to highly regulated industries, check out the project repositories:
+🔗 https://github.com/paulmmoore3416/qualityandcomplianceapp
+🔗 https://github.com/paulmmoore3416/compliance-llm
+
+Massive shout-out to Google and the Gemini team for building such an incredible developer tool! 
+
+#MedTech #RegulatoryAffairs #ISO13485 #FDA #Compliance #SaMD #AI #MachineLearning #Google #Gemini #Gemini3Pro #Gemini3ProCLI #DeveloperTools #BuildWithGemini

@@ -1,0 +1,17 @@
+**Project Title**: Compliance-Llama: AI-Powered Regulatory Drafting Assistant
+
+**Description**:
+Compliance-Llama is an advanced, domain-specialized LLM application designed to drastically reduce the regulatory overhead in the MedTech industry. By inputting basic parameters of a medical device (Class, Risk Profile, Intended User), the system generates audit-ready Standard Operating Procedures (SOPs) and complex regulatory analyses with precise citations to ISO 13485:2016, FDA 21 CFR Part 820, ISO 14971, and modern cybersecurity frameworks like ISO 27001 and FDA's 2023 Cybersecurity Guidance.
+
+**Key Achievements & Technology Stack**:
+*   **Rapid Development with Gemini**: The entire project structure, synthetic data pipeline (containing highly complex, real-world regulatory scenarios), and comprehensive documentation were engineered using the **Gemini 3 Pro CLI**. The intelligence of Google's Gemini model was instrumental in seamlessly translating complex legal and regulatory text into structured application logic.
+*   **Model Serving**: Powered by a QLoRA fine-tune of Llama 3.1 70B, served via vLLM on AMD Instinct MI300X hardware utilizing FP8 quantization for real-time inference.
+*   **Full-Stack UI**: A React/TypeScript frontend with Server-Sent Events (SSE) for real-time token streaming and PDF export capabilities.
+
+**Impact**: Transforms a process that typically takes Regulatory Affairs teams days and thousands of dollars into an instantaneous, accurate drafting workflow.
+
+**Check out the repositories here:**
+🔗 https://github.com/paulmmoore3416/qualityandcomplianceapp
+🔗 https://github.com/paulmmoore3416/compliance-llm
+
+#Google #Gemini #Gemini3Pro #Gemini3ProCLI #AI #MedTech #Compliance #ISO13485

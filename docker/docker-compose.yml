@@ -1,0 +1,100 @@
+# Bring the full Compliance-Llama stack up on a single MI300X node.
+#
+#   docker compose -f docker/docker-compose.yml --profile serve up
+#
+# The --profile gate prevents the heavy training container from booting on
+# inference-only nodes.
+
+version: "3.9"
+
+x-rocm: &rocm-devices
+  devices:
+    - /dev/kfd
+    - /dev/dri
+  group_add:
+    - video
+    - render
+  cap_add:
+    - SYS_PTRACE
+  security_opt:
+    - seccomp=unconfined
+  ipc: host
+  shm_size: "32gb"
+
+services:
+  vllm:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.serving
+    image: compliance-llama/vllm:latest
+    container_name: cl-vllm
+    profiles: ["serve"]
+    <<: *rocm-devices
+    environment:
+      - HF_TOKEN=${HF_TOKEN}
+      - MODEL_PATH=/models/compliance-llama-70b-fp8
+      - HSA_OVERRIDE_GFX_VERSION=9.4.0
+    volumes:
+      - ${MODEL_DIR:-../models}:/models
+      - ../serving:/workspace/serving
+    command: ["bash", "/workspace/serving/launch_vllm.sh"]
+    ports:
+      - "8000:8000"
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8000/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 20
+      start_period: 600s
+
+  api:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.serving
+    image: compliance-llama/api:latest
+    container_name: cl-api
+    profiles: ["serve"]
+    environment:
+      - VLLM_BASE_URL=http://vllm:8000
+      - CL_LOG_LEVEL=INFO
+    depends_on:
+      vllm:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+
+  frontend:
+    build:
+      context: ../frontend
+      dockerfile: ../docker/Dockerfile.frontend
+    image: compliance-llama/frontend:latest
+    container_name: cl-frontend
+    profiles: ["serve"]
+    environment:
+      - VITE_API_BASE_URL=http://localhost:8080
+    ports:
+      - "5173:5173"
+    depends_on:
+      - api
+
+  trainer:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.training
+    image: compliance-llama/trainer:latest
+    container_name: cl-trainer
+    profiles: ["train"]
+    <<: *rocm-devices
+    environment:
+      - HF_TOKEN=${HF_TOKEN}
+      - WANDB_API_KEY=${WANDB_API_KEY:-}
+      - HSA_OVERRIDE_GFX_VERSION=9.4.0
+    volumes:
+      - ../training:/workspace/training
+      - ../data:/workspace/data
+      - ../configs:/workspace/configs
+      - ${MODEL_DIR:-../models}:/models
+      - ${HF_HOME:-../.hf-cache}:/root/.cache/huggingface
+    command: ["bash"]
+    stdin_open: true
+    tty: true

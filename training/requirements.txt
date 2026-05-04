@@ -1,0 +1,22 @@
+# Training-time dependencies. Install on top of the rocm/pytorch:rocm6.2 base
+# image — torch + torchvision are already provided there and pinned to the
+# matching ROCm build, so we deliberately do NOT pin them here.
+transformers>=4.45,<4.50
+peft>=0.13.0
+accelerate>=0.34.0
+datasets>=3.0.0
+trl>=0.11.0
+sentencepiece
+tiktoken
+hf_transfer
+huggingface_hub[cli]
+wandb
+tensorboard
+evaluate
+rouge_score
+pyyaml
+python-dotenv
+
+# bitsandbytes ROCm fork — install via:
+#   pip install --no-build-isolation \
+#     git+https://github.com/ROCm/bitsandbytes.git@rocm_enabled

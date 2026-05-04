@@ -1,0 +1,32 @@
+# Compliance-Llama: Serving image for AMD MI300X (vLLM ROCm + FP8)
+#
+# vLLM ships a dedicated ROCm Dockerfile; we extend it with our merged adapter
+# weights and the FastAPI gateway that fronts the engine.
+
+FROM rocm/vllm:rocm6.2_vllm_0.6.3_20241015
+
+ENV PYTHONUNBUFFERED=1 \
+    HSA_OVERRIDE_GFX_VERSION=9.4.0 \
+    VLLM_USE_TRITON_FLASH_ATTN=1 \
+    VLLM_FP8_PADDING=1
+
+WORKDIR /workspace
+
+RUN pip install --no-cache-dir \
+        fastapi==0.115.0 \
+        "uvicorn[standard]==0.30.6" \
+        sse-starlette==2.1.3 \
+        pydantic==2.9.2 \
+        httpx==0.27.2 \
+        python-dotenv==1.0.1 \
+        reportlab==4.2.5 \
+        markdown==3.7
+
+COPY backend/ /workspace/backend/
+COPY serving/ /workspace/serving/
+
+EXPOSE 8000 8080
+
+# Default command launches the FastAPI gateway; override to launch vLLM
+# directly via `serving/launch_vllm.sh`.
+CMD ["uvicorn", "backend.app.main:app", "--host", "0.0.0.0", "--port", "8080"]
